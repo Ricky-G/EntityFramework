@@ -3160,6 +3160,15 @@ namespace Microsoft.EntityFrameworkCore.Specification.Tests
         }
 
         [ConditionalFact]
+        public virtual void Join_complex_condition()
+        {
+            AssertQuery<Customer, Order>((cs, os) =>
+                from c in cs.Where(c => c.CustomerID == "ALFKI")
+                join o in os.Where(o => o.OrderID < 10250) on true equals true
+                select c.CustomerID);
+        }
+
+        [ConditionalFact]
         public virtual void Join_client_new_expression()
         {
             AssertQuery<Customer, Order>((cs, os) =>
@@ -6166,6 +6175,15 @@ namespace Microsoft.EntityFrameworkCore.Specification.Tests
         }
 
         [ConditionalFact]
+        public virtual void OrderBy_conditional_operator_where_condition_null()
+        {
+            var fakeCustomer = new Customer();
+            AssertQuery<Customer>(customer => customer
+                    .OrderBy(c => fakeCustomer.City == "London" ? "ZZ" : c.City),
+                entryCount: 91);
+        }
+
+        [ConditionalFact]
         public virtual void OrderBy_comparison_operator()
         {
             AssertQuery<Customer>(customer => customer
@@ -7454,6 +7472,37 @@ namespace Microsoft.EntityFrameworkCore.Specification.Tests
                      where customers.Any()
                      select customers).Any()),
                      entryCount: 1);
+        }
+
+        [ConditionalFact]
+        public virtual void GroupBy_join_anonymous()
+        {
+            AssertQuery<Order, OrderDetail>((os, ods) =>
+                (from order in os
+                 join orderDetail in ods on order.OrderID equals orderDetail.OrderID into orderJoin
+                 from orderDetail in orderJoin
+                 group new
+                 {
+                     orderDetail.ProductID,
+                     orderDetail.Quantity,
+                     orderDetail.UnitPrice
+                 } by new
+                 {
+                     order.OrderID,
+                     order.OrderDate
+                 })
+                    .Where(x => x.Key.OrderID == 10248),
+                asserter: (l2oResults, efResults) =>
+                {
+                    var l2oGroup = l2oResults.Cast<IGrouping<dynamic, dynamic>>().Single();
+                    var efGroup = efResults.Cast<IGrouping<dynamic, dynamic>>().Single();
+
+                    Assert.Equal(l2oGroup.Key, efGroup.Key);
+
+                    Assert.Equal(
+                        l2oGroup.OrderBy(element => element.ProductID),
+                        efGroup.OrderBy(element => element.ProductID));
+                });
         }
 
         protected NorthwindContext CreateContext() => Fixture.CreateContext();

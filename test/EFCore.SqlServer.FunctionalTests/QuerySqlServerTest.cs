@@ -3066,6 +3066,22 @@ FROM [Customers] AS [c]
 INNER JOIN [Orders] AS [o] ON ([c].[CustomerID] = [o].[CustomerID]) AND ([c].[CustomerID] = [o].[CustomerID])");
         }
 
+        public override void Join_complex_condition()
+        {
+            base.Join_complex_condition();
+
+            AssertSql(
+                @"SELECT [c].[CustomerID]
+FROM [Customers] AS [c]
+INNER JOIN (
+    SELECT [o].*
+    FROM [Orders] AS [o]
+    WHERE [o].[OrderID] < 10250
+) AS [t] ON 1 = 1
+WHERE [c].[CustomerID] = N'ALFKI'",
+                Sql);
+        }
+
         public override void Join_client_new_expression()
         {
             base.Join_client_new_expression();
@@ -5822,6 +5838,20 @@ ORDER BY CASE
 END");
         }
 
+        public override void OrderBy_conditional_operator_where_condition_null()
+        {
+            base.OrderBy_conditional_operator_where_condition_null();
+
+            AssertSql(
+                @"SELECT [c].[CustomerID], [c].[Address], [c].[City], [c].[CompanyName], [c].[ContactName], [c].[ContactTitle], [c].[Country], [c].[Fax], [c].[Phone], [c].[PostalCode], [c].[Region]
+FROM [Customers] AS [c]
+ORDER BY CASE
+    WHEN 0 = 1
+    THEN N'ZZ' ELSE [c].[City]
+END",
+                Sql);
+        }
+
         public override void OrderBy_comparison_operator()
         {
             base.OrderBy_comparison_operator();
@@ -7388,6 +7418,17 @@ INNER JOIN (
     OFFSET @__p_0 ROWS FETCH NEXT @__p_1 ROWS ONLY
 ) AS [t] ON [c.Orders].[CustomerID] = [t].[CustomerID]
 ORDER BY [t].[City], [t].[CustomerID]");
+        }
+
+        public override void GroupBy_join_anonymous()
+        {
+            base.GroupBy_join_anonymous();
+
+            AssertSql(
+                @"SELECT [order0].[OrderID], [order0].[CustomerID], [order0].[EmployeeID], [order0].[OrderDate], [orderDetail0].[OrderID], [orderDetail0].[ProductID], [orderDetail0].[Discount], [orderDetail0].[Quantity], [orderDetail0].[UnitPrice]
+FROM [Orders] AS [order0]
+LEFT JOIN [Order Details] AS [orderDetail0] ON [order0].[OrderID] = [orderDetail0].[OrderID]
+ORDER BY [order0].[OrderID]");
         }
 
         protected override void ClearLog() => TestSqlLoggerFactory.Reset();
