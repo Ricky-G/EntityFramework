@@ -2598,6 +2598,153 @@ ORDER BY [t].[Rank]",
                 Sql);
         }
 
+        public override void Client_method_on_collection_navigation_in_predicate()
+        {
+            base.Client_method_on_collection_navigation_in_predicate();
+
+            AssertSql(
+                @"SELECT [g].[FullName], [g].[Nickname]
+FROM [Gear] AS [g]
+WHERE [g].[Discriminator] IN (N'Officer', N'Gear') AND ([g].[HasSoulPatch] = 1)
+
+@_outer_FullName: Damon Baird (Size = 450)
+
+SELECT [w].[Id], [w].[AmmunitionType], [w].[IsAutomatic], [w].[Name], [w].[OwnerFullName], [w].[SynergyWithId]
+FROM [Weapon] AS [w]
+WHERE @_outer_FullName = [w].[OwnerFullName]
+
+@_outer_FullName: Marcus Fenix (Size = 450)
+
+SELECT [w].[Id], [w].[AmmunitionType], [w].[IsAutomatic], [w].[Name], [w].[OwnerFullName], [w].[SynergyWithId]
+FROM [Weapon] AS [w]
+WHERE @_outer_FullName = [w].[OwnerFullName]",
+                Sql);
+        }
+
+        public override void Client_method_on_collection_navigation_in_predicate_accessed_by_ef_property()
+        {
+            base.Client_method_on_collection_navigation_in_predicate_accessed_by_ef_property();
+
+            AssertSql(
+                @"SELECT [g].[FullName], [g].[Nickname]
+FROM [Gear] AS [g]
+WHERE [g].[Discriminator] IN (N'Officer', N'Gear') AND ([g].[HasSoulPatch] = 0)
+
+@_outer_FullName: Augustus Cole (Size = 450)
+
+SELECT [w].[Id], [w].[AmmunitionType], [w].[IsAutomatic], [w].[Name], [w].[OwnerFullName], [w].[SynergyWithId]
+FROM [Weapon] AS [w]
+WHERE @_outer_FullName = [w].[OwnerFullName]
+
+@_outer_FullName: Dominic Santiago (Size = 450)
+
+SELECT [w].[Id], [w].[AmmunitionType], [w].[IsAutomatic], [w].[Name], [w].[OwnerFullName], [w].[SynergyWithId]
+FROM [Weapon] AS [w]
+WHERE @_outer_FullName = [w].[OwnerFullName]
+
+@_outer_FullName: Garron Paduk (Size = 450)
+
+SELECT [w].[Id], [w].[AmmunitionType], [w].[IsAutomatic], [w].[Name], [w].[OwnerFullName], [w].[SynergyWithId]
+FROM [Weapon] AS [w]
+WHERE @_outer_FullName = [w].[OwnerFullName]",
+                Sql);
+        }
+
+        public override void Client_method_on_collection_navigation_in_order_by()
+        {
+            base.Client_method_on_collection_navigation_in_order_by();
+
+            AssertSql(
+                @"SELECT [g].[FullName], [g].[Nickname]
+FROM [Gear] AS [g]
+WHERE [g].[Discriminator] IN (N'Officer', N'Gear') AND ([g].[HasSoulPatch] = 0)
+
+@_outer_FullName: Augustus Cole (Size = 450)
+
+SELECT [w].[Id], [w].[AmmunitionType], [w].[IsAutomatic], [w].[Name], [w].[OwnerFullName], [w].[SynergyWithId]
+FROM [Weapon] AS [w]
+WHERE @_outer_FullName = [w].[OwnerFullName]
+
+@_outer_FullName: Dominic Santiago (Size = 450)
+
+SELECT [w].[Id], [w].[AmmunitionType], [w].[IsAutomatic], [w].[Name], [w].[OwnerFullName], [w].[SynergyWithId]
+FROM [Weapon] AS [w]
+WHERE @_outer_FullName = [w].[OwnerFullName]
+
+@_outer_FullName: Garron Paduk (Size = 450)
+
+SELECT [w].[Id], [w].[AmmunitionType], [w].[IsAutomatic], [w].[Name], [w].[OwnerFullName], [w].[SynergyWithId]
+FROM [Weapon] AS [w]
+WHERE @_outer_FullName = [w].[OwnerFullName]",
+                Sql);
+        }
+
+        public override void Client_method_on_collection_navigation_in_additional_from_clause()
+        {
+            base.Client_method_on_collection_navigation_in_additional_from_clause();
+
+            AssertSql(
+                @"",
+                Sql);
+        }
+
+        public override void Client_method_on_collection_navigation_in_outer_join_key()
+        {
+            base.Client_method_on_collection_navigation_in_outer_join_key();
+
+            AssertSql(
+                @"SELECT [g].[FullName], [g].[Nickname]
+FROM [Gear] AS [g]
+WHERE [g].[Discriminator] IN (N'Officer', N'Gear')
+
+@_outer_FullName1: Damon Baird (Size = 450)
+
+SELECT [w0].[Id], [w0].[AmmunitionType], [w0].[IsAutomatic], [w0].[Name], [w0].[OwnerFullName], [w0].[SynergyWithId]
+FROM [Weapon] AS [w0]
+WHERE @_outer_FullName1 = [w0].[OwnerFullName]
+
+@_outer_FullName1: Augustus Cole (Size = 450)
+
+SELECT [w0].[Id], [w0].[AmmunitionType], [w0].[IsAutomatic], [w0].[Name], [w0].[OwnerFullName], [w0].[SynergyWithId]
+FROM [Weapon] AS [w0]
+WHERE @_outer_FullName1 = [w0].[OwnerFullName]
+
+@_outer_FullName1: Dominic Santiago (Size = 450)
+
+SELECT [w0].[Id], [w0].[AmmunitionType], [w0].[IsAutomatic], [w0].[Name], [w0].[OwnerFullName], [w0].[SynergyWithId]
+FROM [Weapon] AS [w0]
+WHERE @_outer_FullName1 = [w0].[OwnerFullName]
+
+@_outer_FullName1: Marcus Fenix (Size = 450)
+
+SELECT [w0].[Id], [w0].[AmmunitionType], [w0].[IsAutomatic], [w0].[Name], [w0].[OwnerFullName], [w0].[SynergyWithId]
+FROM [Weapon] AS [w0]
+WHERE @_outer_FullName1 = [w0].[OwnerFullName]
+
+@_outer_FullName1: Garron Paduk (Size = 450)
+
+SELECT [w0].[Id], [w0].[AmmunitionType], [w0].[IsAutomatic], [w0].[Name], [w0].[OwnerFullName], [w0].[SynergyWithId]
+FROM [Weapon] AS [w0]
+WHERE @_outer_FullName1 = [w0].[OwnerFullName]
+
+SELECT [o].[FullName], [o].[Nickname]
+FROM [Gear] AS [o]
+WHERE ([o].[Discriminator] = N'Officer') AND ([o].[HasSoulPatch] = 1)
+
+@_outer_FullName: Damon Baird (Size = 450)
+
+SELECT [w].[Id], [w].[AmmunitionType], [w].[IsAutomatic], [w].[Name], [w].[OwnerFullName], [w].[SynergyWithId]
+FROM [Weapon] AS [w]
+WHERE @_outer_FullName = [w].[OwnerFullName]
+
+@_outer_FullName: Marcus Fenix (Size = 450)
+
+SELECT [w].[Id], [w].[AmmunitionType], [w].[IsAutomatic], [w].[Name], [w].[OwnerFullName], [w].[SynergyWithId]
+FROM [Weapon] AS [w]
+WHERE @_outer_FullName = [w].[OwnerFullName]",
+                Sql);
+        }
+
         protected override void ClearLog() => TestSqlLoggerFactory.Reset();
 
         private const string FileLineEnding = @"
